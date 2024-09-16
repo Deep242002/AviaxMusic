@@ -1,9 +1,9 @@
 from pyrogram.types import InlineKeyboardButton
-
 import config
 from AviaxMusic import app
+from pyrogram.errors import PeerIdInvalid
 
-
+# Start Panel Function
 def start_panel(_):
     buttons = [
         [
@@ -15,7 +15,7 @@ def start_panel(_):
     ]
     return buttons
 
-
+# Private Panel Function with Error Handling
 def private_panel(_):
     buttons = [
         [
@@ -26,7 +26,7 @@ def private_panel(_):
         ],
         [InlineKeyboardButton(text=_["S_B_4"], callback_data="settings_back_helper")],
         [
-            InlineKeyboardButton(text=_["S_B_5"], user_id=config.OWNER_ID),
+            InlineKeyboardButton(text=_["S_B_5"], callback_data="owner_callback"),
             InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_GROUP),
         ],
         [
@@ -34,3 +34,12 @@ def private_panel(_):
         ],
     ]
     return buttons
+
+# Resolving Peer safely
+async def resolve_user(client, user_id):
+    try:
+        user = await client.resolve_peer(user_id)
+        return user
+    except PeerIdInvalid:
+        print(f"Peer ID invalid for user_id: {user_id}")
+        return None  # Handle invalid peer ID gracefully
